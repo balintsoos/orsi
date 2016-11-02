@@ -12,6 +12,8 @@ typedef std::string GameTitle;
 typedef int GameTime;
 typedef std::vector<GameTime> GameTimes;
 typedef std::map< GameTitle, GameTimes > GameMap;
+typedef std::future<std::pair<int, double>> StatPair;
+typedef std::map< GameTitle, StatPair> GameStat;
 
 int sum(GameTimes &vector)
 {
@@ -26,6 +28,11 @@ int sum(GameTimes &vector)
 double avg(GameTimes &vector)
 {
   return std::floor(sum(vector) / vector.size());
+}
+
+std::pair<int, double> processGame(GameTimes &vector)
+{
+  return std::make_pair(sum(vector), avg(vector));
 }
 
 int main()
@@ -54,10 +61,13 @@ int main()
   input.close();
 
   // Start calculating the sum and avg for every game
-  std::vector<std::future<int>> results;
+  GameStat results;
 
-  for (auto& game : games) {
+  for (auto& game : games)
+  {
     std::cout << game.first << " " << sum(game.second) << " "<< avg(game.second) << std::endl;
+
+    // results[game.first] = processGame(game.second));
   }
 
   return 0;
