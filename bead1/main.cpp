@@ -57,7 +57,7 @@ int main()
   std::vector<std::future<int>> results;
 
   for (auto& game : games) {
-    std::cout << game.first << " - avg: " << avg(game.second) << " - sum: "<< sum(game.second) << std::endl;
+    std::cout << game.first << " " << sum(game.second) << " "<< avg(game.second) << std::endl;
   }
 
   return 0;
