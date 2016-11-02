@@ -3,14 +3,30 @@
 
 #include <iostream>
 #include <fstream>
-#include <map>
 #include <vector>
-#include <future> // ASYNC, FUTURE
+#include <map>
+#include <cmath>
+#include <future>
 
 typedef std::string GameTitle;
 typedef int GameTime;
 typedef std::vector<GameTime> GameTimes;
 typedef std::map< GameTitle, GameTimes > GameMap;
+
+int sum(GameTimes &vector)
+{
+  int sumOfElems = 0;
+
+  for (int n : vector)
+    sumOfElems += n;
+
+  return sumOfElems;
+}
+
+double avg(GameTimes &vector)
+{
+  return std::floor(sum(vector) / vector.size());
+}
 
 int main()
 {
@@ -41,7 +57,7 @@ int main()
   std::vector<std::future<int>> results;
 
   for (auto& game : games) {
-    std::cout << game.first << " - " << game.second.size() << std::endl;
+    std::cout << game.first << " - avg: " << avg(game.second) << " - sum: "<< sum(game.second) << std::endl;
   }
 
   return 0;
