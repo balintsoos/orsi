@@ -30,7 +30,7 @@ double avg(GameTimes &vector)
   return std::floor(sum(vector) / vector.size());
 }
 
-std::pair<int, double> processGame(GameTimes &vector)
+std::pair<int, double> processGame(GameTimes vector)
 {
   return std::make_pair(sum(vector), avg(vector));
 }
@@ -65,9 +65,12 @@ int main()
 
   for (auto& game : games)
   {
-    std::cout << game.first << " " << sum(game.second) << " "<< avg(game.second) << std::endl;
+    results[game.first] = std::async(std::launch::async, processGame, game.second);
+  }
 
-    // results[game.first] = processGame(game.second));
+  for (auto& result : results)
+  {
+    std::cout << result.first << " " << result.second.get().first << " "<< result.second.get().second << std::endl;
   }
 
   return 0;
