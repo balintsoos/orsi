@@ -30,7 +30,7 @@ double avg(const GameTimes& gameplays)
   return std::floor(sum(gameplays) / gameplays.size());
 }
 
-StatPair processGame(const GameTimes& gameplays)
+StatPair calculateGameStats(const GameTimes& gameplays)
 {
   return std::make_pair(sum(gameplays), avg(gameplays));
 }
@@ -79,14 +79,14 @@ void writeFile(const std::string filename, GameStat& results)
 
 int main()
 {
-  GameMap games = readFile("./tests/input_1.txt");
+  GameMap games = readFile("input.txt");
 
   // Calculating sum and avg for every game
   GameStat results;
 
   for (auto const & game : games)
   {
-    results.insert(std::make_pair(game.first, std::async(std::launch::async, processGame, game.second)));
+    results.insert(std::make_pair(game.first, std::async(std::launch::async, calculateGameStats, game.second)));
   }
 
   writeFile("output.txt", results);
