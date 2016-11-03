@@ -11,44 +11,42 @@
 typedef std::string GameTitle;
 typedef int GameTime;
 typedef std::vector<GameTime> GameTimes;
-typedef std::map< GameTitle, GameTimes > GameMap;
+typedef std::map<GameTitle, GameTimes> GameMap;
 typedef std::pair<int, double> StatPair;
-typedef std::future<StatPair> AsyncStatPair;
-typedef std::map< GameTitle, AsyncStatPair> GameStat;
+typedef std::map<GameTitle, std::future<StatPair>> GameStat;
 
-int sum(const GameTimes& vector)
+int sum(const GameTimes& gameplays)
 {
-  int sumOfElems = 0;
+  int result = 0;
 
-  for (int n : vector)
-    sumOfElems += n;
+  for (int n : gameplays)
+    result += n;
 
-  return sumOfElems;
+  return result;
 }
 
-double avg(const GameTimes& vector)
+double avg(const GameTimes& gameplays)
 {
-  return std::floor(sum(vector) / vector.size());
+  return std::floor(sum(gameplays) / gameplays.size());
 }
 
-StatPair processGame(const GameTimes& vector)
+StatPair processGame(const GameTimes& gameplays)
 {
-  return std::make_pair(sum(vector), avg(vector));
+  return std::make_pair(sum(gameplays), avg(gameplays));
 }
 
-int main()
+GameMap readFile(const std::string filename)
 {
-  std::ifstream input("./tests/input_1.txt");
+  std::ifstream input(filename);
 
   unsigned int lineCount, gameCount;
 
-  input >> lineCount >> gameCount;
-
-  // Read data from input file
   GameMap games;
   GameTitle title;
   GameTime seconds;
   std::string temp;
+
+  input >> lineCount >> gameCount;
 
   for (int i = 0; i < lineCount; i++)
   {
@@ -61,16 +59,12 @@ int main()
 
   input.close();
 
-  // Start calculating the sum and avg for every game
-  GameStat results;
+  return games;
+}
 
-  for (auto const & game : games)
-  {
-    results.insert(std::make_pair(game.first, std::async(std::launch::async, processGame, game.second)));
-  }
-
-  // Write the result into a file
-  std::ofstream output("output.txt");
+void writeFile(const std::string filename, GameStat& results)
+{
+  std::ofstream output(filename);
 
   for (auto& result : results)
   {
@@ -81,6 +75,21 @@ int main()
   }
 
   output.close();
+}
+
+int main()
+{
+  GameMap games = readFile("./tests/input_1.txt");
+
+  // Calculating sum and avg for every game
+  GameStat results;
+
+  for (auto const & game : games)
+  {
+    results.insert(std::make_pair(game.first, std::async(std::launch::async, processGame, game.second)));
+  }
+
+  writeFile("output.txt", results);
 
   return 0;
 }
