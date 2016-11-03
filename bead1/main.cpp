@@ -12,10 +12,11 @@ typedef std::string GameTitle;
 typedef int GameTime;
 typedef std::vector<GameTime> GameTimes;
 typedef std::map< GameTitle, GameTimes > GameMap;
-typedef std::future<std::pair<int, double>> StatPair;
-typedef std::map< GameTitle, StatPair> GameStat;
+typedef std::pair<int, double> StatPair;
+typedef std::future<StatPair> AsyncStatPair;
+typedef std::map< GameTitle, AsyncStatPair> GameStat;
 
-int sum(GameTimes &vector)
+int sum(const GameTimes& vector)
 {
   int sumOfElems = 0;
 
@@ -25,12 +26,12 @@ int sum(GameTimes &vector)
   return sumOfElems;
 }
 
-double avg(GameTimes &vector)
+double avg(const GameTimes& vector)
 {
   return std::floor(sum(vector) / vector.size());
 }
 
-std::pair<int, double> processGame(GameTimes vector)
+StatPair processGame(const GameTimes& vector)
 {
   return std::make_pair(sum(vector), avg(vector));
 }
@@ -65,11 +66,12 @@ int main()
 
   for (auto& game : games)
   {
-    results[game.first] = std::async(std::launch::async, processGame, game.second);
+    results.insert(std::make_pair(game.first, std::async(std::launch::async, processGame, game.second)));
   }
 
   for (auto& result : results)
   {
+    result.second.wait();
     std::cout << result.first << " " << result.second.get().first << " "<< result.second.get().second << std::endl;
   }
 
