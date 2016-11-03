@@ -46,17 +46,17 @@ int main()
 
   // Read data from input file
   GameMap games;
-  GameTitle key;
-  GameTime value;
+  GameTitle title;
+  GameTime seconds;
   std::string temp;
 
   for (int i = 0; i < lineCount; i++)
   {
-    input >> temp >> key >> value;
+    input >> temp >> title >> seconds;
 
-    if (!games.count(key)) games[key];
+    if (!games.count(title)) games[title];
 
-    games[key].push_back(value);
+    games[title].push_back(seconds);
   }
 
   input.close();
@@ -64,7 +64,7 @@ int main()
   // Start calculating the sum and avg for every game
   GameStat results;
 
-  for (auto& game : games)
+  for (auto const & game : games)
   {
     results.insert(std::make_pair(game.first, std::async(std::launch::async, processGame, game.second)));
   }
@@ -74,8 +74,10 @@ int main()
 
   for (auto& result : results)
   {
-    result.second.wait();
-    output << result.first << " " << result.second.get().first << result.second.get().second << std::endl;
+    GameTitle title = result.first;
+    StatPair stat = result.second.get();
+
+    output << title << " " << stat.first << " " << stat.second << std::endl;
   }
 
   output.close();
