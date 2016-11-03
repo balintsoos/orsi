@@ -69,11 +69,16 @@ int main()
     results.insert(std::make_pair(game.first, std::async(std::launch::async, processGame, game.second)));
   }
 
+  // Write the result into a file
+  std::ofstream output("output.txt");
+
   for (auto& result : results)
   {
     result.second.wait();
-    std::cout << result.first << " " << result.second.get().first << " "<< result.second.get().second << std::endl;
+    output << result.first << " " << result.second.get().first << result.second.get().second << std::endl;
   }
+
+  output.close();
 
   return 0;
 }
