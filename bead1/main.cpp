@@ -1,33 +1,25 @@
 // compilation on OSX
 // $ g++ -std=c++11 main.cpp -o main
 
-#include <iostream>
 #include <fstream>
 #include <vector>
 #include <map>
-#include <cmath>
 #include <future>
+#include <numeric>
 
-typedef std::string GameTitle;
-typedef int GameTime;
-typedef std::vector<GameTime> GameTimes;
-typedef std::map<GameTitle, GameTimes> GameMap;
-typedef std::pair<int, double> StatPair;
-typedef std::map<GameTitle, std::future<StatPair>> GameStat;
+typedef std::vector<int> GameTimes;
+typedef std::map<std::string, GameTimes> GameMap;
+typedef std::pair<int, int> StatPair;
+typedef std::map<std::string, std::future<StatPair>> GameStat;
 
-int sum(const GameTimes& gameplays)
+int sum(const GameTimes& vector)
 {
-  int result = 0;
-
-  for (int n : gameplays)
-    result += n;
-
-  return result;
+  return std::accumulate(vector.begin(), vector.end(), 0);
 }
 
-double avg(const GameTimes& gameplays)
+int avg(const GameTimes& vector)
 {
-  return std::floor(sum(gameplays) / gameplays.size());
+  return sum(vector) / vector.size();
 }
 
 StatPair calculateGameStats(const GameTimes& gameplays)
@@ -42,17 +34,16 @@ GameMap readFile(const std::string filename)
   unsigned int lineCount, gameCount;
 
   GameMap games;
-  GameTitle title;
-  GameTime seconds;
-  std::string temp;
+  std::string title;
+  int seconds;
 
   input >> lineCount >> gameCount;
 
   for (int i = 0; i < lineCount; i++)
   {
-    input >> temp >> title >> seconds;
+    std::string temp;
 
-    if (!games.count(title)) games[title];
+    input >> temp >> title >> seconds;
 
     games[title].push_back(seconds);
   }
@@ -68,7 +59,7 @@ void writeFile(const std::string filename, GameStat& results)
 
   for (auto& result : results)
   {
-    GameTitle title = result.first;
+    std::string title = result.first;
     StatPair stat = result.second.get();
 
     output << title << " " << stat.first << " " << stat.second << std::endl;
