@@ -33,15 +33,14 @@ GameMap readFile(const std::string filename)
 
   unsigned int lineCount, gameCount;
 
-  GameMap games;
-  std::string title;
-  int seconds;
-
   input >> lineCount >> gameCount;
+
+  GameMap games;
 
   for (int i = 0; i < lineCount; i++)
   {
-    std::string temp;
+    std::string temp, title;
+    int seconds;
 
     input >> temp >> title >> seconds;
 
