@@ -1,0 +1,128 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin2]{inputenc}
+\usepackage[magyar]{babel}
+
+% használt betûtípusok  beállítása
+\usepackage{palatino}
+\usepackage{courier}
+
+%%% felsõ és alsó margó beállítása, elhagyható
+\usepackage[top=3cm,bottom=2cm,inner=2.5cm,outer=2.5cm]{geometry}
+
+% bekezdés behúzásának átállítása
+\setlength{\parindent}{0pt} 
+
+% matematikai képletek írásához
+\usepackage{amsmath}   
+\usepackage{amssymb}
+
+% függvények kapcsolódási szerkezetének rajzolásához
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+
+% programkód megjelenítéséhez
+\usepackage{listings}
+\lstset{language=C++, basicstyle=\ttfamily, keywordstyle=\color{blue}\ttfamily, stringstyle=\color{red}\ttfamily}
+
+% specifikáció állapotterében \alatt{arg1}{arg2} saját paranccsal adható meg
+% az arg1 típusértékhalmaz és a hozzá tartozó arg2 változó
+\newcommand*{\alatt}[2]{\underset{\mathop{\vrule height 5pt width 0pt\relax #2}}{#1}}
+
+% a specifikáció utófeltételében használt nagy függvények definiálása
+\DeclareMathOperator*{\SEARCH}{\textit{\small \textbf{SEARCH}}}
+\DeclareMathOperator*{\SELECT}{\textit{\small \textbf{SELECT}}}
+\DeclareMathOperator*{\MAX}{\textit{\small \textbf{MAX}}}
+
+%%% az adatokat tartalmazó doboz rajzolásához
+\usepackage{tcolorbox}
+
+% sorszámozott listához
+\usepackage{enumitem}
+
+% több oszlopos bekezdések
+\usepackage{multicol}
+
+\usepackage{graphicx}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%% SZEMÉLYES ADATOK %%%%%%%%%%%%%%%%%%%%
+\begin{center}
+\begin{tcolorbox}[title=\Large{Osztott rendszerek specifikációja és implementációja}\\1. beadandó - Dokumentáció,arc=0mm]
+\begin{minipage}[t]{0.5\textwidth}
+	\textbf{Név:} Soós Bálint\\
+	\textbf{Neptun kód:} HDX9MU\\
+	\textbf{Elérhetõség:} soosbalint95@gmail.com
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}\raggedleft{
+	\textbf{Gyakorlatvezetõ:} Horpácsi Dániel\\
+	\textbf{Csoport:} 5.\\
+	\today}
+\end{minipage}
+\end{tcolorbox}
+\end{center}
+\vspace{18pt}
+
+%%%%%%%%%%%%%%%%%%%% FELADAT %%%%%%%%%%%%%%%%%%%%
+Valamikor, a nem túl távoli jövõben az Informatikai Kar túlnõtt a programozóképzés keretein. A hatalmas túljelentkezés és munkaerõpiaci igény miatt szükségessé vált további hallgatók felvétele, akik késõbb a megszerzett tudást versenykörülmények között tudják hasznosítani. Világossá vált, hogy a profi fejlesztõk és a hivatásos felhasználók együttmûködése elengedhetetlen. Bár továbbra is hatalmas érdeklõdés övezte a programozói képzést, ám egyre többen jöttek gamer ambíciókkal. Az egyetem úgy döntött, hogy új Kart indít a játékos közösség igényeinek kiszolgálására, hogy a profi eSportolók közössége minõségi oktatást kaphasson az ELTE-n belül.\\
+
+A különbözõ tanszékekhez, az oktatói és hallgatói létszámhoz, valamint a géptermek felszereltségéhez azonban szükséges információ a megfelelõ játékostáborral arányos erõforrások biztosítása. A proginf.-es képzésben résztvevõ, B szakirányos diákokra bízzák a kiszámítását annak, hogy milyen súlyú a különbözõ játékok iránti érdeklõdés, hogy ehhez mérve igazíthassák a tantárgyi felosztást.\\
+
+A felvételizõk között ezért elõzetes felmérést végeztek, ki milyen játékokkal játszik szabadidejében. Az így kapott adathalmaz közkedvelt játékai közül M kapott döntõ mennyiségû szavazatot, így a második körben ezekre szûkült a kérdõív, melyben minden hallgató válaszolt, hogy egy héten mennyi idõt (percet) tölt az egyes játékokkal. Természetesen voltak, akik nem csupán egyetlen mûfajnak hódoltak, így elõfordult, hogy több kitöltés is érkezett ugyan attól a hallgatótól. A névtelenség, de egyszeri válaszadás fenntartásának érdekében a kitöltõket NEPTUN-kóddal azonosították. A játékokat egy-egy szóközt nem tartalmazó, szöveg típusú adat reprezentálja (pl. "WoW" vagy "LoL").\\
+
+{\textbf {Bemenet}}\\[6pt]
+A bemenet -- input.txt -- elsõ sorában tartalmazza a szóközzel elválasztott N és M pozitív egészeket -- ahol következõ N sorában pedig egy-egy neptunkód, játéknév és percben eltöltött idõ (egész szám) szóközzel elválasztott hármasát:
+
+\begin{lstlisting}
+N M
+NEPTUN_1 gameazon perc   - az 1. válasz adatai
+NEPTUN_2 gameazon perc   - az 2. válasz adatai
+...
+...
+...
+NEPTUN_N gameazon perc   - az N. válasz adatai
+\end{lstlisting}
+\newpage
+
+{\textbf {Feladat}}\\[6pt]
+A fõfolyamat olvassa be az adatokat, indítson M gyerekfolyamatot, majd minden gyerekfolyamathoz társítson egy-egy játékhoz tartozó adathalmazt. (A játékok száma pontosan M, így minden játék adatát párhuzamosan kell kiszámolni.) A gyerekfolyamatok dolga megállapítani, hogy az adott játékkal mennyi idõt töltöttek összesen (percben) a válaszadók, valamint az átlagos játékidõ kiszámítása az adott játékhoz (egész percre lefelé kerekítve - floor(..) ). Ezt a két adatot küldje vissza a szülõfolyamatnak.\\
+
+A fõfolyamat ezek után a játékokhoz tartozó, összesen és átlagosan eltöltött idõt szóközzel elválasztva a JÁTÉKOK azonosítója ALAPJÁN BETÛRENDBEN írja az output.txt kimeneti fájlba.\\
+
+{\textbf {Felhasználói dokumentáció}}\\[2pt]
+\begin{enumerate}[topsep=1pt,noitemsep,leftmargin=*]
+	\item \textit{\textbf{Környezet}}\\[4pt]
+	A program fordítástól függõen \texttt{.out} kiterjesztés esetén Linux/OSX oprendszereken, \texttt{.exe} kiterjesztés esetén Windows oprendszereken használható. Telepítésre
+	nincs szükség, elegendõ a futtatható állományt elhelyezni a számítógépen.\\
+		\item \textit{\textbf{Használat}}\\[4pt]
+	A program elindításához nincs szükség parancssori paraméterekre, így parancssoron kívül is lehet futtatni. A programmal egy mappaszinten kell elhelyezni az \texttt{input.txt} bemeneti fájlt. A program eredményét ugyanezen a szinten az \texttt{output.txt} kimeneti fájlba írja.\\
+	
+	Egy lehetséges bemenetet tartalmaz a mellékelt \texttt{input.txt} fájl, illetve a \texttt{tests} mappában további példák találhatóak. Saját
+	bemeneti fájlok esetén fontos, hogy a feladatban megadott szempontok alapján
+	írjuk az adatokat a fájlba, mivel ezek helyességét a programban nem ellenõrizzük.\\
+\end{enumerate}
+
+{\textbf {Fejlesztõi dokumentáció}}\\[2pt]
+\begin{enumerate}[topsep=1pt,noitemsep,leftmargin=*]
+	\item \textit{\textbf{Megoldás módja}}\\[4pt]
+	A programot logikailag két részre, fõ- és alfolyamatokra bonthatjuk. A fõfolyamat végzi a bemeneti adatok beolvasását, amiket egy \texttt{Map} adatszerkezetben tárol. Létrehoz a \texttt{Map} hosszúságának megfelelõ számú alfolyamatot, amelyek kiszámolják az adott játékkal töltött idõ összegét és átlagát. Az alfolyamatokból érkezõ eredményeket a fõfolyamat írja a kimeneti fájlba.
+	\\
+	
+	\item \textit{\textbf{Implementáció}}\\[4pt]
+	A beolvasott adatokat egy \texttt{Map} adatszerkezetben tároltam, ahol a kulcs a játék azonosítója, az érték egy vektor, amelyben a játékkal eltöltött idõket tároltam. Egy alfolyamat a map egy vektorát kapják paraméterül, visszatérési értékük az értékek átlagából és összegébõl alkotott pár.\\
+	
+	Az alfolyamatok eredményét szintén egy map-ban tároltam. A C++11 szabvány nyelvi elemeit kihasználva a map értékei  \texttt{std::future<std::pair<int, int>>} típusúak. A szükséges M számú (játékok száma, amely megfelel a map méretével) alfolyamatot az \texttt{std::async} segítségével párhuzamosítottam. A teljes implementáció egyetlen forrásfájlba szervezve, a \texttt{main.cpp} fájlban található.
+	\\
+	
+	\item \textit{\textbf{Fordítás}}\\[4pt]
+	A program forráskódja a \texttt{main.cpp} fájlban található. Fordításához egy C++11 szabványt támogató fordítóprogram szükséges. A fejlesztéshez a \texttt{g++} fordítót használtam:
+	\texttt{g++ -std=c++11 main.cpp}
+	\\
+	
+	\item \textit{\textbf{Tesztelés}}\\[4pt]
+	Teszteléshez a \texttt{tests} mappában található bemeneti fájlokat használtam, amelyek mindegyikére az elvárt kimenetet állítja elõ a program.
+\end{enumerate}
+
+
+\end{document}
