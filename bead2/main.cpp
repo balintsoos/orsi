@@ -29,7 +29,7 @@ NeptunIds readFile(const std::string filename)
   return ids;
 }
 
-void writeFile(const std::string filename, NeptunIds& ids)
+void writeFile(const std::string filename, NeptunIds &ids)
 {
   std::ofstream output(filename);
 
@@ -41,9 +41,30 @@ void writeFile(const std::string filename, NeptunIds& ids)
   output.close();
 }
 
+void bubbleSort(NeptunIds &v)
+{
+  bool swapped = true;
+
+  for (unsigned j = 1; swapped && j < v.size(); ++j)
+  {
+    swapped = false;
+
+    for (unsigned i = 0; i < v.size() - j; ++i)
+    {
+      if (v[i] > v[i + 1])
+      {
+        std::swap(v[i], v[i + 1]);
+        swapped = true;
+      }
+    }
+  }
+}
+
 int main()
 {
   NeptunIds ids = readFile("tests/input_1.txt");
+
+  bubbleSort(ids);
 
   writeFile("output.txt", ids);
 
