@@ -4,12 +4,14 @@
 // Resources:
 // http://stackoverflow.com/questions/24130307/performance-problems-in-parallel-mergesort-c
 
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
 #include <numeric>
 #include <future>
 #include <thread>
+#include <chrono>
 
 typedef std::vector<std::string> NeptunIds;
 
@@ -99,9 +101,7 @@ void merge(std::vector<T>& v, std::vector<T>& v1, std::vector<T>& v2) {
 }
 
 template <typename T>
-void mergeSort(std::vector<T>& v, unsigned int grainsize = std::thread::hardware_concurrency() / 2) {
-  if (v.size() <= 1) return;
-
+void mergeSort(std::vector<T>& v, unsigned int threadLimit = std::thread::hardware_concurrency() / 2) {
   if (v.size() <=  1024)
   {
     bubbleSort(v);
@@ -111,12 +111,12 @@ void mergeSort(std::vector<T>& v, unsigned int grainsize = std::thread::hardware
   std::vector<T> v1(v.begin(), v.begin() + v.size() / 2);
   std::vector<T> v2(v.begin() + v.size() / 2, v.end());
 
-  if (grainsize > 1) {
-    auto future = std::async([&v1, &grainsize]() mutable {
-      mergeSort(v1, grainsize - 2);
+  if (threadLimit > 1) {
+    auto future = std::async([&v1, &threadLimit]() mutable {
+      mergeSort(v1, threadLimit - 2);
     });
 
-    mergeSort(v2, grainsize - 2);
+    mergeSort(v2, threadLimit - 2);
 
     future.wait();
   }
@@ -131,9 +131,17 @@ void mergeSort(std::vector<T>& v, unsigned int grainsize = std::thread::hardware
 
 int main()
 {
+  using namespace std::chrono;
+
   NeptunIds ids = readFile("tests/input_3.txt");
 
+  time_point<system_clock> t0, t1;
+  t0 = system_clock::now();
+
   mergeSort(ids);
+
+  t1 = system_clock::now();
+  std::cout << duration_cast<milliseconds>(t1 - t0).count() << "ms\n";
 
   writeFile("output.txt", ids);
 
