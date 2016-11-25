@@ -1,11 +1,15 @@
 // compilation on OSX
 // $ g++ -std=c++11 main.cpp -o main
 
+// Resources:
+// http://stackoverflow.com/questions/24130307/performance-problems-in-parallel-mergesort-c
+
 #include <fstream>
 #include <vector>
 #include <string>
 #include <numeric>
 #include <future>
+#include <thread>
 
 typedef std::vector<std::string> NeptunIds;
 
@@ -95,29 +99,39 @@ void merge(std::vector<T>& v, std::vector<T>& v1, std::vector<T>& v2) {
 }
 
 template <typename T>
-void mergeSort(std::vector<T>& v) {
-  if (1 < v.size() && 300 > v.size())
+void mergeSort(std::vector<T>& v, unsigned int grainsize = std::thread::hardware_concurrency() / 2) {
+  if (v.size() <= 1) return;
+
+  if (v.size() <=  1024)
   {
     bubbleSort(v);
+    return;
   }
-  else if (300 >= v.size()) {
-    std::vector<T> v1(v.begin(), v.begin() + v.size() / 2);
-    auto future = std::async([&v1]() mutable {
-      mergeSort(v1);
+
+  std::vector<T> v1(v.begin(), v.begin() + v.size() / 2);
+  std::vector<T> v2(v.begin() + v.size() / 2, v.end());
+
+  if (grainsize > 1) {
+    auto future = std::async([&v1, &grainsize]() mutable {
+      mergeSort(v1, grainsize - 2);
     });
 
-    std::vector<T> v2(v.begin() + v.size() / 2, v.end());
-    mergeSort(v2);
+    mergeSort(v2, grainsize - 2);
 
     future.wait();
-
-    merge(v, v1, v2);
   }
+  else
+  {
+    mergeSort(v1, 0);
+    mergeSort(v2, 0);
+  }
+
+  merge(v, v1, v2);
 }
 
 int main()
 {
-  NeptunIds ids = readFile("tests/input_1.txt");
+  NeptunIds ids = readFile("tests/input_3.txt");
 
   mergeSort(ids);
 
