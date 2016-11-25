@@ -98,10 +98,14 @@ template <typename T>
 void mergeSort(std::vector<T>& v) {
   if (1 < v.size()) {
     std::vector<T> v1(v.begin(), v.begin() + v.size() / 2);
-    mergeSort(v1);
+    auto future = std::async([&v1]() mutable {
+      mergeSort(v1);
+    });
 
     std::vector<T> v2(v.begin() + v.size() / 2, v.end());
     mergeSort(v2);
+
+    future.wait();
 
     merge(v, v1, v2);
   }
@@ -111,7 +115,6 @@ int main()
 {
   NeptunIds ids = readFile("tests/input_1.txt");
 
-  // bubbleSort(ids);
   mergeSort(ids);
 
   writeFile("output.txt", ids);
