@@ -1,0 +1,135 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin2]{inputenc}
+\usepackage[magyar]{babel}
+
+% használt betûtípusok  beállítása
+\usepackage{palatino}
+\usepackage{courier}
+
+%%% felsõ és alsó margó beállítása, elhagyható
+\usepackage[top=3cm,bottom=2cm,inner=2.5cm,outer=2.5cm]{geometry}
+
+% bekezdés behúzásának átállítása
+\setlength{\parindent}{0pt} 
+
+% matematikai képletek írásához
+\usepackage{amsmath}   
+\usepackage{amssymb}
+
+% függvények kapcsolódási szerkezetének rajzolásához
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+
+% programkód megjelenítéséhez
+\usepackage{listings}
+\lstset{language=C++, basicstyle=\ttfamily, keywordstyle=\color{blue}\ttfamily, stringstyle=\color{red}\ttfamily}
+
+% specifikáció állapotterében \alatt{arg1}{arg2} saját paranccsal adható meg
+% az arg1 típusértékhalmaz és a hozzá tartozó arg2 változó
+\newcommand*{\alatt}[2]{\underset{\mathop{\vrule height 5pt width 0pt\relax #2}}{#1}}
+
+% a specifikáció utófeltételében használt nagy függvények definiálása
+\DeclareMathOperator*{\SEARCH}{\textit{\small \textbf{SEARCH}}}
+\DeclareMathOperator*{\SELECT}{\textit{\small \textbf{SELECT}}}
+\DeclareMathOperator*{\MAX}{\textit{\small \textbf{MAX}}}
+
+%%% az adatokat tartalmazó doboz rajzolásához
+\usepackage{tcolorbox}
+
+% sorszámozott listához
+\usepackage{enumitem}
+
+% több oszlopos bekezdések
+\usepackage{multicol}
+
+\usepackage{graphicx}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%% SZEMÉLYES ADATOK %%%%%%%%%%%%%%%%%%%%
+\begin{center}
+\begin{tcolorbox}[title=\Large{Osztott rendszerek specifikációja és implementációja}\\2. beadandó - Dokumentáció,arc=0mm]
+\begin{minipage}[t]{0.5\textwidth}
+	\textbf{Név:} Soós Bálint\\
+	\textbf{Neptun kód:} HDX9MU\\
+	\textbf{Elérhetõség:} soosbalint95@gmail.com
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}\raggedleft{
+	\textbf{Gyakorlatvezetõ:} Horpácsi Dániel\\
+	\textbf{Csoport:} 5.\\
+	\today}
+\end{minipage}
+\end{tcolorbox}
+\end{center}
+\vspace{18pt}
+
+%%%%%%%%%%%%%%%%%%%% FELADAT %%%%%%%%%%%%%%%%%%%%
+{\textbf {Háttértörténet}}\\[6pt]
+A félév közepén járunk, így a felvett diákoknak is számot kell adniuk az eddigi teljesítményükrõl. Az évfolyam zárthelyin azonban szigorú szabályok vannak, így az áttekinthetõség miatt a tanulmányi rendszerben elfoglalt helyük alapján fogják ültetni a diákokat az írásbeli során, ennek köszönhetõen mindenki hamarabb megtalálja a saját helyét. A ZH-t író hallgatók NEPTUN-kódjait egy szöveges fájlban kapták meg a vizsgáztatók, ám ebben még jelentkezési sorrendben voltak megtalálhatóak az adatok, rendezetlenül. Annak érdekében, hogy gyorsan meghatározható legyen, hogy kinek hol a helye, egy, az épületben tartózkodó proginfes hallgató segítségét kérték a tanárok. A teremben lévõ számítógépen, melyen a programot meg kellett írni, a rendezési algoritmusokat tartalmazó lib. sérült volt. Mivel már nem maradt idõ másik gépet keresni, a vizsgáztatókon úrrá lett a pánik, ám az ELTEs hallgató hidegvérrel válaszolt:\\
+
+"Ne aggódjanak! Egy pillanat alatt megoldjuk a problémát, hiszen tanultam 'Algoritmusok és Adatszerkezetek'-bõl a MergeSort-ot!" - így a vizsga sikeresen, a szabályoknak megfelelõen tudott lezajlani.\\
+
+A programozó hallgatónak tehát az alábbi problémát kellett megoldania:\\
+
+A bemenet input.txt elsõ sorában egy N pozitív egész olvasható, ennyi diáknak kell biztosítani termet, míg a következõ N sorban a hallgatók NEPTUN-kódjai, azaz N string követi egymást, ez mutatja a jelentkezési sorrendet.\\
+
+Egy lehetséges bemeneti fájl:\\
+
+\begin{lstlisting}
+7
+OSAVH1
+T0NDJB
+4S1UPL
+AXKAW4
+22TQP7
+NM8VPS
+PJVNEU
+\end{lstlisting}
+\newpage
+
+{\textbf {Feladat}}\\[6pt]
+A megoldás során TILOS a beépített rendezéseket használni (pl. std::sort()), a feladat egy párhuzamosított MergeSort (összefésüléses rendezés) implementálása! A fõ folyamat feladata az adatok beolvasása az input.txt fájlból, majd az output.txt kimeneti fájl létrehozása, benne a rendezett adathalmazzal. Rendezéshez kötõdõ számítást ne végezzen! (Összefésülést sem!)\\
+
+A megvalósításkor a rekurzívan definiált algoritmusból induljatok ki! A rekurzió két ága mindenképpen külön szálon fusson, ám annak meghatározása, hogy mely ponton áll meg a rekurzív hívás, és történik helyben rendezés (buborékrendezés), a hallgató feladata, külön megkötés erre vonatkozóan nincs. Kérünk titeket, hogy ne használjatok beépített összefuttatási algoritmust, hanem kézzel implementáljátok az erre vonatkozó feladatot is! (összefésülés/összefuttatás programozási tétele.) A dokumentáció során ezt a választást mérésekkel alátámasztva indokoljátok a fejlesztõi fejezetben!\\
+
+{\textbf {Felhasználói dokumentáció}}\\[2pt]
+\begin{enumerate}[topsep=1pt,noitemsep,leftmargin=*]
+	\item \textit{\textbf{Környezet}}\\[4pt]
+	A program fordítástól függõen \texttt{.out} kiterjesztés esetén Linux/OSX oprendszereken, \texttt{.exe} kiterjesztés esetén Windows oprendszereken használható. Telepítésre
+	nincs szükség, elegendõ a futtatható állományt elhelyezni a számítógépen.\\
+		\item \textit{\textbf{Használat}}\\[4pt]
+	A program elindításához nincs szükség parancssori paraméterekre, így parancssoron kívül is lehet futtatni. A programmal egy mappaszinten kell elhelyezni az \texttt{input.txt} bemeneti fájlt. A program eredményét ugyanezen a szinten az \texttt{output.txt} kimeneti fájlba írja.\\
+	
+	Egy lehetséges bemenetet tartalmaz a mellékelt \texttt{input.txt} fájl, illetve a \texttt{tests} mappában további példák találhatóak. Saját
+	bemeneti fájlok esetén fontos, hogy a feladatban megadott szempontok alapján
+	írjuk az adatokat a fájlba, mivel ezek helyességét a programban nem ellenõrizzük.\\
+\end{enumerate}
+
+{\textbf {Fejlesztõi dokumentáció}}\\[2pt]
+\begin{enumerate}[topsep=1pt,noitemsep,leftmargin=*]
+	\item \textit{\textbf{Megoldás módja}}\\[4pt]
+	A programot logikailag két részre, fõfolyamatra és a rendezõ algoritmusokra bonthatjuk. A fõfolyamat végzi a bemeneti adatok beolvasását, amiket egy \texttt{vector<string>} adatszerkezetben tárol. Erre hajtja végre a \texttt{MergeSort} rendezõ algoritmust, majd az eredményt szintén a fõfolyamat írja a kimeneti fájlba.
+	\\
+	
+	\item \textit{\textbf{Implementáció}}\\[4pt]
+	A MergeSort implementálásához a rekurzív összefésülõ rendezés algoritmusát használjuk fel, azonban hatékonysági szempontból fejleszthetünk rajta azáltal, hogy egy adott elemszám alatt buborékrendezünk (BubbleSort). A limitszám meghatározásához méréseket kell végeznünk, amelyeket az 5. pontban összegeztük. A rekurzió két ágát külön szálakon végezzük, ehhez elég csak 1 új szálat nyitni, amelyiken tetszõlegesen az egyik ágat számoljuk, a másik maradhat a fõszálon. A teljes implementáció egyetlen forrásfájlba szervezve, a \texttt{main.cpp} fájlban található.
+	\\
+	
+	\item \textit{\textbf{Fordítás}}\\[4pt]
+	A program forráskódja a \texttt{main.cpp} fájlban található. Fordításához egy C++11 szabványt támogató fordítóprogram szükséges. A fejlesztéshez a \texttt{g++} fordítót használtam:
+	\texttt{g++ -std=c++11 main.cpp}
+	\\
+	
+	\item \textit{\textbf{Tesztelés}}\\[4pt]
+	Teszteléshez a \texttt{tests} mappában található bemeneti fájlokat használtam, amelyek mindegyikére az elvárt kimenetet állítja elõ a program.
+	\\
+	
+	\item \textit{\textbf{Mérések}}\\[4pt]
+	A méréseket egy 10 000 soros bemeneti fájl végeztük. A grafikonról leolvasható, hogy a futási idõt 64-es limitszámmal volt a legkisebb, azaz 64 elemre még érdemes buborékrendezni, felette azonban hatékonyabb az összefésülõ rendezés.\\
+	
+	\includegraphics[width=\textwidth]{chart}
+\end{enumerate}
+
+
+\end{document}
