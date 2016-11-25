@@ -1,4 +1,4 @@
-// compilation on OSX
+// compilation
 // $ g++ -std=c++11 main.cpp -o main
 
 #include <iostream>
