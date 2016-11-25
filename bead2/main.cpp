@@ -9,7 +9,7 @@
 
 typedef std::vector<std::string> NeptunIds;
 
-NeptunIds readFile(const std::string filename)
+NeptunIds readFile(const std::string& filename)
 {
   NeptunIds ids;
   std::ifstream input(filename);
@@ -29,7 +29,7 @@ NeptunIds readFile(const std::string filename)
   return ids;
 }
 
-void writeFile(const std::string filename, NeptunIds &ids)
+void writeFile(const std::string& filename, NeptunIds& ids)
 {
   std::ofstream output(filename);
 
@@ -41,7 +41,8 @@ void writeFile(const std::string filename, NeptunIds &ids)
   output.close();
 }
 
-void bubbleSort(NeptunIds &v)
+template <typename T>
+void bubbleSort(std::vector<T>& v)
 {
   bool swapped = true;
 
@@ -60,11 +61,58 @@ void bubbleSort(NeptunIds &v)
   }
 }
 
+template <typename T>
+void merge(std::vector<T>& v, std::vector<T>& v1, std::vector<T>& v2) {
+  int i, j, k;
+  v.clear();
+
+  for (i = 0, j = 0, k = 0; i < v1.size() && j < v2.size(); ++k)
+  {
+    if (v1.at(i) <= v2.at(j))
+    {
+      v.push_back(v1.at(i));
+      ++i;
+    }
+    else if (v1.at(i) > v2.at(j))
+    {
+      v.push_back(v2.at(j));
+      ++j;
+    }
+    ++k;
+  }
+
+  while(i < v1.size())
+  {
+    v.push_back(v1.at(i));
+    ++i;
+  }
+
+  while(j < v2.size())
+  {
+    v.push_back(v2.at(j));
+    ++j;
+  }
+}
+
+template <typename T>
+void mergeSort(std::vector<T>& v) {
+  if (1 < v.size()) {
+    std::vector<T> v1(v.begin(), v.begin() + v.size() / 2);
+    mergeSort(v1);
+
+    std::vector<T> v2(v.begin() + v.size() / 2, v.end());
+    mergeSort(v2);
+
+    merge(v, v1, v2);
+  }
+}
+
 int main()
 {
   NeptunIds ids = readFile("tests/input_1.txt");
 
-  bubbleSort(ids);
+  // bubbleSort(ids);
+  mergeSort(ids);
 
   writeFile("output.txt", ids);
 
