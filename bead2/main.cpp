@@ -96,7 +96,11 @@ void merge(std::vector<T>& v, std::vector<T>& v1, std::vector<T>& v2) {
 
 template <typename T>
 void mergeSort(std::vector<T>& v) {
-  if (1 < v.size()) {
+  if (1 < v.size() && 300 > v.size())
+  {
+    bubbleSort(v);
+  }
+  else if (300 >= v.size()) {
     std::vector<T> v1(v.begin(), v.begin() + v.size() / 2);
     auto future = std::async([&v1]() mutable {
       mergeSort(v1);
