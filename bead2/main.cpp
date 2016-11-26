@@ -43,79 +43,62 @@ void writeFile(const std::string& filename, NeptunIds& ids)
   output.close();
 }
 
-template <typename T>
-void bubbleSort(std::vector<T>& v)
+template<typename Iter>
+void bubbleSort(Iter begin, Iter end)
 {
-  bool swapped = true;
-
-  for (unsigned j = 1; swapped && j < v.size(); ++j)
+  for (Iter i = begin; i != end; ++i)
   {
-    swapped = false;
-
-    for (unsigned i = 0; i < v.size() - j; ++i)
+    for (Iter j = begin; j < i; ++j)
     {
-      if (v[i] > v[i + 1])
+      if (*i < *j)
       {
-        std::swap(v[i], v[i + 1]);
-        swapped = true;
+        std::iter_swap(i, j);
       }
     }
   }
 }
 
-template <typename T>
-void merge(std::vector<T>& v, std::vector<T>& v1, std::vector<T>& v2) {
-  int i, j, k;
-  v.clear();
+template<typename Iter>
+std::vector<typename Iter::value_type> merge(Iter begin, Iter middle, Iter end) {
+  std::vector<typename Iter::value_type> buffer;
+  buffer.reserve(std::distance(begin, end));
 
-  for (i = 0, j = 0, k = 0; i < v1.size() && j < v2.size(); ++k)
+  Iter left(begin);
+  Iter right(middle);
+
+  const Iter &left_end = middle;
+  const Iter &right_end = end;
+
+  while (left != left_end && right != right_end)
   {
-    if (v1.at(i) <= v2.at(j))
-    {
-      v.push_back(v1.at(i));
-      ++i;
-    }
-    else if (v1.at(i) > v2.at(j))
-    {
-      v.push_back(v2.at(j));
-      ++j;
-    }
-    ++k;
+      buffer.push_back((*left <= *right) ? *left++ : *right++);
   }
 
-  while(i < v1.size())
-  {
-    v.push_back(v1.at(i));
-    ++i;
-  }
+  buffer.insert(buffer.end(), left, left_end);
+  buffer.insert(buffer.end(), right, right_end);
 
-  while(j < v2.size())
-  {
-    v.push_back(v2.at(j));
-    ++j;
-  }
+  return buffer;
 }
 
-template <typename T>
-void mergeSort(std::vector<T>& v) {
-  if (v.size() <=  64)
+template<typename Iter>
+void mergeSort(Iter begin, Iter end) {
+  auto length = std::distance(begin, end);
+
+  if (length <=  64)
   {
-    bubbleSort(v);
+    bubbleSort(begin, end);
     return;
   }
 
-  std::vector<T> v1(v.begin(), v.begin() + v.size() / 2);
-  std::vector<T> v2(v.begin() + v.size() / 2, v.end());
+  Iter middle = std::next(begin, length / 2);
 
-  auto future = std::async([&v1]() mutable {
-    mergeSort(v1);
-  });
-
-  mergeSort(v2);
+  auto future = std::async(mergeSort<Iter>, begin, middle);
+  mergeSort(middle, end);
 
   future.wait();
 
-  merge(v, v1, v2);
+  auto &&v = merge(begin, middle, end);
+  std::move(v.cbegin(), v.cend(), begin);
 }
 
 int main()
@@ -127,7 +110,7 @@ int main()
   time_point<system_clock> t0, t1;
   t0 = system_clock::now();
 
-  mergeSort(ids);
+  mergeSort(ids.begin(), ids.end());
 
   t1 = system_clock::now();
   std::cout << duration_cast<milliseconds>(t1 - t0).count() << "ms\n";
