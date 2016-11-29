@@ -60,13 +60,13 @@ Vectors readVectors(const std::string& filename)
   return V;
 }
 
-void writeFile(const std::string& filename, Vectors& V)
+void writeVectors(const std::string& filename, Vectors& V)
 {
   std::ofstream output(filename);
 
   for (auto const& v : V)
   {
-    for (size_t i = 0; i < v.size(); i++) {
+    for (size_t i = 0; i < v.size() - 1; i++) {
       output << v[i] << " ";
     }
 
@@ -76,21 +76,19 @@ void writeFile(const std::string& filename, Vectors& V)
   output.close();
 }
 
-void multiplication(const Matrix& m, Vector& v)
+Vector linTransform(const Matrix& m, const Vector& v)
 {
-  const int length = v.size();
-
   Vector result;
 
-  for (size_t i = 0; i < length; i++) {
-    int item = 0;
+  for (size_t i = 0; i < v.size(); i++) {
+    result[i] = 0;
 
-    for (size_t j = 0; j < length; j++) {
-      item += m[i][j] * v[j];
+    for (size_t j = 0; j < v.size(); j++) {
+      result[i] += m[i][j] * v[j];
     }
-
-    v[i] = item;
   }
+
+  return result;
 }
 
 void linTransforms(Vectors& V, Matrices& M)
@@ -99,7 +97,7 @@ void linTransforms(Vectors& V, Matrices& M)
   {
     for (auto const& m : M)
     {
-      multiplication(m, v);
+      v = linTransform(m, v);
     }
   }
 }
@@ -119,7 +117,7 @@ int main()
   t1 = system_clock::now();
   std::cout << duration_cast<milliseconds>(t1 - t0).count() << "ms\n";
 
-  writeFile("output.txt", V);
+  writeVectors("output.txt", V);
 
   return 0;
 }
