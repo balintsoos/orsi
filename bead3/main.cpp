@@ -7,6 +7,8 @@
 #include <vector>
 #include <string>
 #include <chrono>
+#include <thread>
+#include "pipeline.hpp"
 
 typedef std::array<int, 4> Vector;
 typedef std::array<std::array<int, 4>, 4> Matrix;
@@ -91,14 +93,44 @@ Vector linTransform(const Matrix& m, const Vector& v)
   return result;
 }
 
+void threadHandler(Pipeline<Vector>& input, Pipeline<Vector>& output, const Matrix& m, int vectorCount)
+{
+  for (size_t i = 0; i < vectorCount; i++) {
+    Vector v = input.pop();
+
+    output.push(linTransform(m, v));
+  }
+}
+
 void linTransforms(Vectors& V, Matrices& M)
 {
-  for (auto& v : V)
+  std::vector<std::thread> threads;
+  std::vector<std::reference_wrapper<Pipeline<Vector>>> pipes;
+
+  Pipeline<Vector> firstPipe;
+
+  firstPipe.push(V);
+  pipes.push_back(std::ref(firstPipe));
+
+  for (size_t i = 0; i < M.size(); i++) {
+    Pipeline<Vector> p;
+
+    pipes.push_back(std::ref(p));
+  }
+
+  for (size_t i = 0; i < M.size(); i++) {
+    threads.push_back(std::thread(threadHandler, pipes[i], pipes[i + 1], M[i], V.size()));
+  }
+
+  for (auto& t : threads)
   {
-    for (auto const& m : M)
-    {
-      v = linTransform(m, v);
-    }
+    t.join();
+  }
+
+  for (size_t i = 0; i < V.size(); i++) {
+    Vector v = pipes[pipes.size() - 1].get().pop();
+
+    V[i] = v;
   }
 }
 
@@ -106,8 +138,8 @@ int main()
 {
   using namespace std::chrono;
 
-  Matrices M = readMatrices("tests/0/input_matrices.txt");
-  Vectors V = readVectors("tests/0/input_points.txt");
+  Matrices M = readMatrices("input_matrices.txt");
+  Vectors V = readVectors("input_points.txt");
 
   time_point<system_clock> t0, t1;
   t0 = system_clock::now();
