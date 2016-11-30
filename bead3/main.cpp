@@ -101,8 +101,6 @@ void threadHandler(Pipeline<Vector>& input, Pipeline<Vector>& output, const Matr
   {
     Vector v = input.pop();
 
-    std::cout << v[0] << v[1] << v[2];
-
     Vector result = linTransform(m,v);
     output.push(result);
   }
@@ -111,38 +109,25 @@ void threadHandler(Pipeline<Vector>& input, Pipeline<Vector>& output, const Matr
 void calculate(Vectors& V, Matrices& M)
 {
   std::vector<std::thread> threads;
-  std::vector<std::reference_wrapper<Pipeline<Vector>>> pipes;
+  std::vector<Pipeline<Vector>> pipes(M.size() + 1);
 
-  Pipeline<Vector> firstPipe;
+  for (size_t i = 0; i < M.size(); i++) {
+    threads.push_back(std::thread(threadHandler, std::ref(pipes[i]), std::ref(pipes[i + 1]), M[i], V.size()));
+  }
 
   for (auto& v : V)
   {
-    firstPipe.push(v);
-  }
-
-  pipes.push_back(std::ref(firstPipe));
-
-  for (size_t i = 0; i < M.size(); i++) {
-    Pipeline<Vector> p;
-
-    pipes.push_back(std::ref(p));
-  }
-
-  for (size_t i = 0; i < M.size(); i++) {
-    threads.push_back(std::thread(threadHandler, pipes[i], pipes[i + 1], M[i], V.size()));
+    pipes[0].push(v);
   }
 
   for (auto& t : threads)
   {
-    if (t.joinable())
-    {
-      t.join();
-    }
+    t.join();
   }
 
   for (auto& v : V)
   {
-    Vector result = pipes[pipes.size() - 1].get().pop();
+    Vector result = pipes[pipes.size() - 1].pop();
 
     v = result;
   }
@@ -155,13 +140,13 @@ int main()
   Matrices M = readMatrices("tests/0/input_matrices.txt");
   Vectors V = readVectors("tests/0/input_points.txt");
 
-  time_point<system_clock> t0, t1;
-  t0 = system_clock::now();
+  time_point<system_clock> start, end;
+  start = system_clock::now();
 
   calculate(V, M);
 
-  t1 = system_clock::now();
-  std::cout << duration_cast<milliseconds>(t1 - t0).count() << "ms\n";
+  end = system_clock::now();
+  std::cout << duration_cast<milliseconds>(end - start).count() << "ms\n";
 
   writeVectors("output.txt", V);
 
