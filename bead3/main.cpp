@@ -96,20 +96,26 @@ Vector linTransform(const Matrix& m, const Vector& v)
 void threadHandler(Pipeline<Vector>& input, Pipeline<Vector>& output, const Matrix& m, int vectorCount)
 {
   for (size_t i = 0; i < vectorCount; i++) {
+    std::cout << i;
+
     Vector v = input.pop();
 
     output.push(linTransform(m, v));
   }
 }
 
-void linTransforms(Vectors& V, Matrices& M)
+void calculate(Vectors& V, Matrices& M)
 {
   std::vector<std::thread> threads;
   std::vector<std::reference_wrapper<Pipeline<Vector>>> pipes;
 
   Pipeline<Vector> firstPipe;
 
-  firstPipe.push(V);
+  for (auto& v : V)
+  {
+    firstPipe.push(v);
+  }
+
   pipes.push_back(std::ref(firstPipe));
 
   for (size_t i = 0; i < M.size(); i++) {
@@ -124,13 +130,17 @@ void linTransforms(Vectors& V, Matrices& M)
 
   for (auto& t : threads)
   {
-    t.join();
+    if (t.joinable())
+    {
+      t.join();
+    }
   }
 
-  for (size_t i = 0; i < V.size(); i++) {
-    Vector v = pipes[pipes.size() - 1].get().pop();
+  for (auto& v : V)
+  {
+    Vector result = pipes[pipes.size() - 1].get().pop();
 
-    V[i] = v;
+    v = result;
   }
 }
 
@@ -138,13 +148,13 @@ int main()
 {
   using namespace std::chrono;
 
-  Matrices M = readMatrices("input_matrices.txt");
-  Vectors V = readVectors("input_points.txt");
+  Matrices M = readMatrices("tests/0/input_matrices.txt");
+  Vectors V = readVectors("tests/0/input_points.txt");
 
   time_point<system_clock> t0, t1;
   t0 = system_clock::now();
 
-  linTransforms(V, M);
+  calculate(V, M);
 
   t1 = system_clock::now();
   std::cout << duration_cast<milliseconds>(t1 - t0).count() << "ms\n";
