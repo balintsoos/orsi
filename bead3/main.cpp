@@ -1,5 +1,7 @@
 // compilation
-// $ g++ -std=c++11 main.cpp -o main
+// $ g++ -std=c++11 main.cpp
+// or
+// $ clang++ -std=c++11 main.cpp
 
 #include <iostream>
 #include <fstream>
@@ -95,12 +97,14 @@ Vector linTransform(const Matrix& m, const Vector& v)
 
 void threadHandler(Pipeline<Vector>& input, Pipeline<Vector>& output, const Matrix& m, int vectorCount)
 {
-  for (size_t i = 0; i < vectorCount; i++) {
-    std::cout << i;
-
+  for (size_t i = 0; i < vectorCount; i++)
+  {
     Vector v = input.pop();
 
-    output.push(linTransform(m, v));
+    std::cout << v[0] << v[1] << v[2];
+
+    Vector result = linTransform(m,v);
+    output.push(result);
   }
 }
 
