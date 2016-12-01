@@ -1,0 +1,148 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin2]{inputenc}
+\usepackage[magyar]{babel}
+
+% használt betûtípusok  beállítása
+\usepackage{palatino}
+\usepackage{courier}
+
+%%% felsõ és alsó margó beállítása, elhagyható
+\usepackage[top=3cm,bottom=2cm,inner=2.5cm,outer=2.5cm]{geometry}
+
+% bekezdés behúzásának átállítása
+\setlength{\parindent}{0pt} 
+
+% matematikai képletek írásához
+\usepackage{amsmath}   
+\usepackage{amssymb}
+
+% függvények kapcsolódási szerkezetének rajzolásához
+\usepackage{tikz}
+\usetikzlibrary{shapes}
+
+% programkód megjelenítéséhez
+\usepackage{listings}
+\lstset{language=C++, basicstyle=\ttfamily, keywordstyle=\color{blue}\ttfamily, stringstyle=\color{red}\ttfamily}
+
+% specifikáció állapotterében \alatt{arg1}{arg2} saját paranccsal adható meg
+% az arg1 típusértékhalmaz és a hozzá tartozó arg2 változó
+\newcommand*{\alatt}[2]{\underset{\mathop{\vrule height 5pt width 0pt\relax #2}}{#1}}
+
+% a specifikáció utófeltételében használt nagy függvények definiálása
+\DeclareMathOperator*{\SEARCH}{\textit{\small \textbf{SEARCH}}}
+\DeclareMathOperator*{\SELECT}{\textit{\small \textbf{SELECT}}}
+\DeclareMathOperator*{\MAX}{\textit{\small \textbf{MAX}}}
+
+%%% az adatokat tartalmazó doboz rajzolásához
+\usepackage{tcolorbox}
+
+% sorszámozott listához
+\usepackage{enumitem}
+
+% több oszlopos bekezdések
+\usepackage{multicol}
+
+\usepackage{graphicx}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%% SZEMÉLYES ADATOK %%%%%%%%%%%%%%%%%%%%
+\begin{center}
+\begin{tcolorbox}[title=\Large{Osztott rendszerek specifikációja és implementációja}\\3. beadandó - Dokumentáció,arc=0mm]
+\begin{minipage}[t]{0.5\textwidth}
+	\textbf{Név:} Soós Bálint\\
+	\textbf{Neptun kód:} HDX9MU\\
+	\textbf{Elérhetõség:} soosbalint95@gmail.com
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}\raggedleft{
+	\textbf{Gyakorlatvezetõ:} Horpácsi Dániel\\
+	\textbf{Csoport:} 5.\\
+	\today}
+\end{minipage}
+\end{tcolorbox}
+\end{center}
+\vspace{18pt}
+
+%%%%%%%%%%%%%%%%%%%% FELADAT %%%%%%%%%%%%%%%%%%%%
+{\textbf {Háttértörténet}}\\[6pt]
+Egyre közelebb a karácsony, ami a hallgatók számára a vizsgaidõszakot jelenti. A diákok a projektmunkák végére értek, a leadási határidõ pedig vészjóslóan közel került hozzájuk. Az ELTEngine nevû játék-motrot használták a fejlesztésekre, ebben valósították meg az év elején kitûzött célokat. A végsõ tesztek során azonban hibásnak érezték a program mûködését, a karakteranimációk megvalósításáért felelõs modul mûveletigénye hatalmas volt, így használhatatlanná vált éles projektben való alkalmazásra. Annak érdekében, hogy helyesen mûködjön a szoftver, a fejlesztõkhöz fordultak, akik - ismerve a B szakirányos hallgatók példaértékû munkáját - ismét az ELTE-s diákokat kérték meg a probléma elhárítására. A rosszul mûködõ komponens forráskódját végignézve rájöttek, hogy a hiba oka egy figyelmetlen fejlesztõ barkácsolásának köszönhetõ, aki nem ismerte a pipeline fogalmát, így négy, egymásba ágyazott ciklusba szervezve futott a kódrészlet, ami a karaktereket reprezentáló vertexek sorozatán elvégezte a szükséges mátrix-transzformációkat. Szerencsére a B-s fejlesztõk szorgalmasan jártak ORSI-elõadásra és gyakorlatra, így magától értetõdõ volt, hogy adatcsatorna tételére visszavezetve máris N+M-es futásidejû kódot kaphatnak, ami már megfelelt a megrendelõk igényének. A patch kiadása és az ELTEngine frissítése után a hallgatók megelégedve készülhettek a vizsgaidõszakra, hiszen az év során felmerülõ összes akadályt sikerült leküzdeniük a kemény munkával.\\
+
+A bemeneti fájlok egyike, az \texttt{input\_matrices.txt} elsõ sorában egy M pozitív egész olvasható, ennyi lineáris transzformációt kell elvégezni az objektumokat reprezentáló vektorokon, míg a következõ 4xM sorban egy-egy 4x4es mátrix sorfolytonos reprezentációja található szóközökkel elválasztva. (4 egymás utáni sor jelent egy mátrixot.) A másik fájl, az \texttt{input\_points.txt} tartalmazza a pontok listáját, amikre alkalmazni kell az elõbbi mátrixokkal való szorzást. Ennek elsõ sora egy egész szám, N, ez után található N sor egy-egy 3 dimenziós vektor koordinátáit írja le (szintén szóközzel tagolva).\\
+
+A számítást a késõbbiekben megkönnyíti, ha a bemenet során a 3D-s vektorokat 4 dimenzióban reprezentáljátok, a negyedik koordinátát 1-re inicializálva. A mátrixszal való szorzás így lényegesen könnyebbé válik.\\
+
+Egy lehetséges \texttt{input\_matrices.txt} fájl: (Az alábbi mátrix-transzformációk pl. a 2x-es méretezés, 90°-os forgatást az X tengely körül, majd a (3;-2;4) vektorral való eltolást jelentik.)\\
+
+\newpage
+
+\begin{multicols}{2}
+\texttt{input\_matrices.txt}
+\begin{lstlisting}
+1
+2 0 0 0
+0 2 0 0
+0 0 2 0
+0 0 0 1
+\end{lstlisting}
+\texttt{input\_points.txt}
+\begin{lstlisting}
+2
+1 1 1
+1 1 -1
+\end{lstlisting}
+\end{multicols}
+
+{\textbf {Feladat}}\\[6pt]
+A feladatban az adatcsatorna tételére visszavezetve kell megoldani a kitûzött problémát!\\
+
+A fõfolyamat dolga, hogy beolvassa a mátrixokat, majd M threadet létrehozva, s azokat egy-egy transzformációnak megfeleletetve átadja nekik az megfelelõ mátrixokat. A pontokat az elsõ mátrixot reprezentáló szálnak kell elküldeni, majd az utolsó leképezést megvalósító gyerektõl fogadja a megfelelõen transzformált vektorokat. Ezek után írja soronként az output.txt fájlba az így kapott eredményt.\\
+
+Az indított szálak feladata, hogy fogadják a vektorokat a megelõzõ gyerektõl (az elsõ transzformáció esetén a mastertõl), elvégezzék a mátrix-vektor szorzást, majd továbbítsák az így kapott részeredményt a következõ folyamatnak. (Az utolsó számítás esetén a masternek.) A teljes memóriahasználat csökkentése érdekében használhattok külön szálat a beolvasás és kiírás elvégzésére.\\
+
+A dokumentációban mindenképp szerepeljen a visszavezetés mikéntje, azaz a megfeleltetés az absztrakt programhoz! A fejlesztõi fejezetben szeretnénk mérésekkel alátámasztva látni, hogyan is skálázódott a program a különbözõ méretû bemenetek esetén!\\
+
+{\textbf {Felhasználói dokumentáció}}\\[2pt]
+\begin{enumerate}[topsep=1pt,noitemsep,leftmargin=*]
+	\item \textit{\textbf{Környezet}}\\[4pt]
+	A program fordítástól függõen \texttt{.out} kiterjesztés esetén Linux/OSX oprendszereken, \texttt{.exe} kiterjesztés esetén Windows oprendszereken használható. Telepítésre
+	nincs szükség, elegendõ a futtatható állományt elhelyezni a számítógépen.\\
+		\item \textit{\textbf{Használat}}\\[4pt]
+	A program elindításához nincs szükség parancssori paraméterekre, így parancssoron kívül is lehet futtatni. A programmal egy mappaszinten kell elhelyezni a bemeneti fájlokat. A program eredményét ugyanezen a szinten az \texttt{output.txt} kimeneti fájlba írja.\\
+	
+	Egy lehetséges bemenetet tartalmaznak a mellékelt fájlok, illetve a feladathoz csatolt \texttt{tests} mappában további példák találhatóak. Saját bemeneti fájlok esetén fontos, hogy a feladatban megadott szempontok alapján
+	írjuk az adatokat a fájlba, mivel ezek helyességét a programban nem ellenõrizzük.\\
+\end{enumerate}
+
+\newpage
+
+{\textbf {Fejlesztõi dokumentáció}}\\[2pt]
+\begin{enumerate}[topsep=1pt,noitemsep,leftmargin=*]
+	\item \textit{\textbf{Megoldás módja}}\\[4pt]
+	A programot logikailag két részre, fõfolyamatra és az adatcsatornákkal összekötött alfolyamatokra bonthatjuk. A fõfolyamat végzi a bemeneti adatok beolvasását, amiket egy \texttt{vector<array<int, 4>>} adatszerkezetben tárol. Létrehozza az adatcsatornákat és az alfolyamatokat, amelyeknek átad egy mátrixot, illetve két csatornát. Az egyiken keresztül kapja transzformálandó vektorokat, a másikon pedig továbbküldi az eredményeket. A végeredményt szintén a fõfolyamat írja a kimeneti fájlba.
+	\\
+	
+	\item \textit{\textbf{Visszavezetés az adatcsatorna tételére}}\\[4pt]
+	TODO
+	\\	
+	
+	\item \textit{\textbf{Implementáció}}\\[4pt]
+	Az adatcsatorna implementációja a \texttt{pipeline.hpp}, a fõprogramé pedig a \texttt{main.cpp} fájlban található.
+	\\
+	
+	\item \textit{\textbf{Fordítás}}\\[4pt]
+	A program forráskódja a \texttt{main.cpp} fájlban található. Fordításához egy C++11 szabványt támogató fordítóprogram szükséges. A fejlesztéshez a \texttt{g++} fordítót használtam:
+	\texttt{g++ -std=c++11 main.cpp}
+	\\
+	
+	\item \textit{\textbf{Tesztelés}}\\[4pt]
+	Teszteléshez a feladathoz csatolt \texttt{tests} mappában található bemeneti fájlokat használtam, amelyek mindegyikére az elvárt kimenetet állítja elõ a program.
+	\\
+	
+	\item \textit{\textbf{Mérések}}\\[4pt]
+	
+	\includegraphics[width=\textwidth]{chart}
+	
+\end{enumerate}
+
+\end{document}
