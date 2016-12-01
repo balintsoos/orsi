@@ -70,11 +70,7 @@ void writeVectors(const std::string& filename, Vectors& V)
 
   for (auto const& v : V)
   {
-    for (size_t i = 0; i < v.size() - 1; i++) {
-      output << v[i] << " ";
-    }
-
-    output << std::endl;
+    output << v[0] << " " << v[1] << " " << v[2] << std::endl;
   }
 
   output.close();
@@ -137,8 +133,8 @@ int main()
 {
   using namespace std::chrono;
 
-  Matrices M = readMatrices("tests/0/input_matrices.txt");
-  Vectors V = readVectors("tests/0/input_points.txt");
+  Matrices M = readMatrices("input_matrices.txt");
+  Vectors V = readVectors("input_points.txt");
 
   time_point<system_clock> start, end;
   start = system_clock::now();
