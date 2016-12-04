@@ -122,9 +122,39 @@ A dokumentációban mindenképp szerepeljen a visszavezetés mikéntje, azaz a megfel
 	A programot logikailag két részre, fõfolyamatra és az adatcsatornákkal összekötött alfolyamatokra bonthatjuk. A fõfolyamat végzi a bemeneti adatok beolvasását, amiket egy \texttt{vector<array<int, 4>>} adatszerkezetben tárol. Létrehozza az adatcsatornákat és az alfolyamatokat, amelyeknek átad egy mátrixot, illetve két csatornát. Az egyiken keresztül kapja transzformálandó vektorokat, a másikon pedig továbbküldi az eredményeket. A végeredményt szintén a fõfolyamat írja a kimeneti fájlba.
 	\\
 	
-	\item \textit{\textbf{Visszavezetés az adatcsatorna tételére}}\\[4pt]
-	TODO
-	\\	
+	\item \textit{\textbf{Visszavezetés}}\\[4pt]
+	A feladatot vezessük vissza az adatcsatorna tételére.\\
+	
+	$M = <m_1, m_2, .. , m_k>, m_i \in Z^{n \times n}$ $(i \in [1..k])$\\[4pt]
+	$V = <v_1, v_2, .. , v_l>, v_i \in Z^{n}$ $(i \in [1..l])$\\[4pt]
+	
+	$linTrans \in Z^{n \times n} \times Z^{n} \mapsto Z^{n} $\\[4pt]
+	$linTrans(m, v) = \{ x_i |  x_i := \sum_{j = 1}^{n} m_{ij} * v_{j} \}$ $(\forall i \in [1..n])$\\[4pt]
+	
+	$F(M, V) = f_{k+1} \circ f_{k} \circ .. \circ f_1$\\[4pt]
+	ahol $f_i: \forall j \in [1..l]: linTrans(m_i, v_j)$ $(\forall i \in [1..n + 1])$\\[4pt]
+	
+	
+	\begin{center}
+		\begin{tikzpicture}
+		[mybox/.style={draw=gray!20, fill=gray!10, very thick,
+			rectangle, rounded corners, inner sep=30pt, inner ysep=20pt}]
+		
+		\node [mybox] (box){
+			\begin{minipage}{0.50\textwidth}
+			\begin{center}
+			\begin{tabular}{ccc}
+			\textbf{Tétel} &  & \textbf{Feladat} \\
+			\hline
+			$D$ & $\leftarrow$ & $V$ \\ 
+			$F(x)$ & $\leftarrow$ & $F(M, V)$ \\ 
+			$X_{i}$ & $\leftarrow$ & \textit{változatlan}\\ 
+			\end{tabular} 
+			\end{center}
+			\end{minipage}
+		};
+		\end{tikzpicture}
+	\end{center}
 	
 	\item \textit{\textbf{Implementáció}}\\[4pt]
 	Az adatcsatorna implementációja a \texttt{pipeline.hpp}, a fõprogramé pedig a \texttt{main.cpp} fájlban található.
@@ -140,6 +170,7 @@ A dokumentációban mindenképp szerepeljen a visszavezetés mikéntje, azaz a megfel
 	\\
 	
 	\item \textit{\textbf{Mérések}}\\[4pt]
+	A méréseket egy Intel Core i5 4 magos (2.6Ghz) processzoron végeztük.
 	
 	\includegraphics[width=\textwidth]{chart}
 	
